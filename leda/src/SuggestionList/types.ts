@@ -5,12 +5,13 @@ import { LiProps } from '../../components/Li';
 import { UlProps } from '../../components/Ul';
 import { COMPONENTS_NAMESPACES } from '../../constants';
 import { GlobalDefaultTheme, PartialGlobalDefaultTheme } from '../../utils/useTheme';
+import { MultiSelectValue } from '../../components/MultiSelect/types';
 
 export type Value = SomeObject | string | number | null;
 
 export interface SuggestionTarget {
   target: {
-    value: SomeObject | string | number,
+    value: SomeObject | string | number | GroupedSomeObject,
   },
 }
 
@@ -20,10 +21,12 @@ export interface SuggestionListProps {
   groupBy?: (option: Value) => string | undefined,
   groupLabelRender?: CustomRender<{}, {}, LiProps>,
   groupWrapperRender?: CustomRender<{}, {}, DivProps>,
+  hasCheckboxes?: boolean,
   highlightedSuggestion?: Value,
   selectedSuggestion?: Value,
   isLoading?: boolean,
   isOpen: boolean,
+  isSelectAllButton?: boolean,
   itemRender?: CustomRender<SuggestionItemProps, {}, LiProps>,
   listRender?: CustomRender<SuggestionListProps, {}, UlProps>,
   noSuggestionsRender?: CustomRender<SuggestionListProps, {}, NoSuggestionsProps>,
@@ -32,14 +35,17 @@ export interface SuggestionListProps {
   shouldAllowEmpty: boolean,
   textField?: string,
   theme?: PartialGlobalDefaultTheme[typeof COMPONENTS_NAMESPACES.suggestionList],
-  value: string | number | SomeObject | null | (string[] | number[] | SomeObject[]),
+  value: string | number | SomeObject | null | (string[] | number[] | SomeObject[] | GroupedSomeObject[]),
 }
 
 export interface SuggestionItemProps {
-  isScrollTarget: boolean,
+  hasCheckboxes?: boolean,
+  isChoosed?: boolean,
   isPlaceholder: boolean,
   isHighlighted?: boolean,
+  isScrollTarget: boolean,
   isSelected?: boolean,
+  isSemi?: boolean,
   item: string | number | SomeObject | null,
   itemRender?: CustomRender<SuggestionItemProps, {}, LiProps>,
   onClick?: CustomEventHandler<React.MouseEvent<HTMLElement> & SuggestionTarget>,
@@ -56,4 +62,5 @@ export interface NoSuggestionsProps {
 export interface GroupedSomeObject {
   key: string,
   dataItems: SomeObject[],
+  isSelected?: boolean,
 }
