@@ -38,6 +38,7 @@ export const MultiSelect = React.forwardRef((props: MultiSelectProps, ref: React
     invalidMessageRender,
     hasCheckboxes,
     isDisabled,
+    isClickableGroup,
     isLoading,
     isOpen,
     isRequired,
@@ -177,7 +178,7 @@ export const MultiSelect = React.forwardRef((props: MultiSelectProps, ref: React
   });
 
   const TagsContainerCustomization = useElement(
-    'TagsContainer',
+    'TagsContainerCustomization',
     TagsContainer,
     tagsContainerRender || multiSelectRenders.tagsContainerRender,
     props,
@@ -242,6 +243,7 @@ export const MultiSelect = React.forwardRef((props: MultiSelectProps, ref: React
           groupBy={groupBy}
           hasCheckboxes={hasCheckboxes}
           highlightedSuggestion={highlightedSuggestion}
+          isClickableGroup={isClickableGroup}
           isLoading={isLoading}
           isOpen={isNil(isOpen) ? isFocused : isOpen}
           isSelectAllButton={isSelectAllButton}

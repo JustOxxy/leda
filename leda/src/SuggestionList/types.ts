@@ -5,7 +5,6 @@ import { LiProps } from '../../components/Li';
 import { UlProps } from '../../components/Ul';
 import { COMPONENTS_NAMESPACES } from '../../constants';
 import { GlobalDefaultTheme, PartialGlobalDefaultTheme } from '../../utils/useTheme';
-import { MultiSelectValue } from '../../components/MultiSelect/types';
 
 export type Value = SomeObject | string | number | null;
 
@@ -16,7 +15,8 @@ export interface SuggestionTarget {
 }
 
 export interface SuggestionListProps {
-  boundingContainerRef?: React.RefObject<HTMLElement | { wrapper: HTMLElement }>,
+  boundingContainerRef?: React.RefObject<HTMLElement | { wrapper: HTMLElement | null }>,
+  compareObjectsBy?: ((suggestionListItem: SomeObject) => any) | string,
   data?: Value[],
   groupBy?: (option: Value) => string | undefined,
   groupLabelRender?: CustomRender<{}, {}, LiProps>,
@@ -24,6 +24,7 @@ export interface SuggestionListProps {
   hasCheckboxes?: boolean,
   highlightedSuggestion?: Value,
   selectedSuggestion?: Value,
+  isClickableGroup?: boolean,
   isLoading?: boolean,
   isOpen: boolean,
   isSelectAllButton?: boolean,
@@ -63,4 +64,26 @@ export interface GroupedSomeObject {
   key: string,
   dataItems: SomeObject[],
   isSelected?: boolean,
+}
+
+export interface GetSuggestionItemProps {
+  compareObjectsBy?: ((suggestionListItem: SomeObject) => any) | string,
+  hasCheckboxes?: boolean,
+  highlightedSuggestion?: Value,
+  isGroupLabel?: boolean,
+  placeholder?: string,
+  selectedSuggestion?: Value,
+  suggestion: Value | GroupedSomeObject,
+  textField?: string,
+}
+
+export interface SuggestionItemComputedProps {
+  isScrollTarget: boolean,
+  isPlaceholder: boolean,
+  isHighlighted?: boolean,
+  isSelected?: boolean,
+  item: string | number | SomeObject | null,
+  hasCheckboxes?: boolean,
+  key: string,
+  text: string | number,
 }

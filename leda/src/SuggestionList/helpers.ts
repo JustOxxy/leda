@@ -2,7 +2,8 @@ import * as React from 'react';
 import { isObject, isNil } from 'lodash';
 import { Value } from '../../components/DropDownSelect/types';
 import { SomeObject } from '../../commonTypes';
-import { GroupedSomeObject } from './types';
+import { GetSuggestionItemProps, SuggestionItemComputedProps, GroupedSomeObject } from './types';
+import { checkIsTheSameObject } from '../../utils';
 
 export const getText = (suggestion?: string | number | SomeObject | null, textField?: string): string => {
   if (!suggestion) return '';
@@ -37,7 +38,7 @@ export const scrollToSuggestion = (
   if (offset) containerRef.current.scrollBy?.(0, offset);
 };
 
-export const groupData = (data: Value[] | undefined, groupBy: (option: Value) => string | undefined): Value[] | GroupedSomeObject[] => {
+export const groupData = (data: Value[] | undefined, groupBy: ((option: Value) => string | undefined) | undefined): Value[] | GroupedSomeObject[] => {
   // used to keep track of key and indexes in the result array
   const indexByKey = new Map();
   let currentResultIndex = 0;
@@ -58,4 +59,47 @@ export const groupData = (data: Value[] | undefined, groupBy: (option: Value) =>
     }
     return accumulator;
   }, []) ?? [];
+};
+
+export const getSuggestionItemProps = ({
+  compareObjectsBy,
+  suggestion,
+  textField,
+  placeholder,
+  highlightedSuggestion,
+  selectedSuggestion,
+  isGroupLabel,
+  hasCheckboxes,
+}: GetSuggestionItemProps): SuggestionItemComputedProps => {
+  const text = isGroupLabel ? getText((suggestion as GroupedSomeObject)?.key, textField) : getText(suggestion, textField);
+
+  const isPlaceholder = text === placeholder;
+  const isHighlighted = checkIsTheSameObject({
+    compareObjectsBy,
+    obj1: suggestion,
+    obj2: highlightedSuggestion,
+  });
+  const isSelected = checkIsTheSameObject({
+    compareObjectsBy,
+    obj1: suggestion,
+    obj2: selectedSuggestion,
+  });
+
+  // является ли текущий элемент целью scrollToSuggestion
+  const isScrollTarget = highlightedSuggestion ? isHighlighted : isSelected;
+
+  const key = isObject(suggestion) ? JSON.stringify(suggestion) : suggestion as string;
+
+  const item = suggestion === placeholder ? null : suggestion;
+
+  return {
+    text,
+    isHighlighted,
+    isPlaceholder,
+    isSelected,
+    isScrollTarget,
+    key,
+    item,
+    hasCheckboxes,
+  };
 };
