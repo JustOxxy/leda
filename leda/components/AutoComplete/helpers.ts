@@ -2,8 +2,6 @@ import * as React from 'react';
 import {
   every, isArray, isFunction, isNil, isObject, isString,
 } from 'lodash';
-
-import { SomeObject } from '../../commonTypes';
 import {
   AutoCompleteProps,
   CHANGE_METHOD,
