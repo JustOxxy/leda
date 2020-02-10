@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { isNil } from 'lodash';
+import { isNil, isObject } from 'lodash';
 import { LedaContext } from '../../components/LedaProvider';
 import { Loader } from '../../components/Loader';
 import { Div, DivRefCurrent } from '../../components/Div';
@@ -15,18 +15,18 @@ import { NoSuggestions } from './NoSuggestions';
 export const SuggestionList = (props: SuggestionListProps): React.ReactElement | null => {
   const {
     boundingContainerRef,
+    canSelectAll,
+    canSelectGroup,
     compareObjectsBy,
     data,
     groupBy,
     groupLabelRender,
     groupWrapperRender,
-    hasCheckboxes,
+    hasCheckBoxes,
     highlightedSuggestion,
     selectedSuggestion,
-    isClickableGroup,
     isLoading,
     isOpen,
-    isSelectAllButton,
     itemRender,
     listRender,
     noSuggestionsRender,
@@ -51,14 +51,14 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
 
   const GroupLabel = useElement(
     'GroupLabel',
-    Li,
+    Div,
     groupLabelRender || suggestionRenders.groupLabelRender,
     props,
   );
 
   const GroupWrapper = useElement(
     'GroupWrapper',
-    Div,
+    Ul,
     groupWrapperRender || suggestionRenders.groupWrapperRender,
     props,
   );
@@ -131,16 +131,26 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
           containerRef.current = component && component.wrapper;
         }}
       >
-        {isSelectAllButton && (() => {
+        {canSelectAll && (() => {
           const text = 'Выбрать все';
-          const suggestionsCount = suggestions.reduce((accumulator: number, suggestion) => ((suggestion as GroupedSomeObject)?.dataItems ? (accumulator + (suggestion as GroupedSomeObject)?.dataItems?.length) : (accumulator + 1)), 0);
-          const isSemi = (value as Value[])?.length > 0 && (value as Value[])?.every((elem) => data?.includes(elem));
-          const isSelectAllChoosed = (value as Value[])?.length === suggestionsCount;
+          const suggestionsCount = suggestions.reduce((accumulator: number, suggestion) => (
+            (suggestion as GroupedSomeObject)?.dataItems
+              ? (accumulator + (suggestion as GroupedSomeObject)?.dataItems?.length)
+              : (accumulator + 1)), 0);
+
+          const isSemi = (() => {
+            if ((value as Value[]).length === 0) return false;
+
+            // all nested checkboxes are checked
+            return (value as Value[]).every((elem) => data?.includes(elem));
+          })();
+
+          const isSelectAllChosen = (value as Value[]).length === suggestionsCount;
           return (
             <SuggestionItem
-              hasCheckboxes={hasCheckboxes}
-              isChoosed={isSemi}
-              isSemi={!isSelectAllChoosed && isSemi}
+              hasCheckBoxes={hasCheckBoxes}
+              isChosen={isSemi}
+              isSemi={!isSelectAllChosen && isSemi}
               isPlaceholder={false}
               isScrollTarget={false}
               item={text === placeholder ? null : text}
@@ -165,25 +175,31 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
               suggestion,
               textField,
               isGroupLabel: true,
-              hasCheckboxes,
+              hasCheckBoxes,
             });
+            // const key = isObject(suggestion) ? JSON.stringify(suggestion) : suggestion as string;
+            const isGroupChosen = canSelectGroup && (suggestion as GroupedSomeObject)?.dataItems?.every((elem) => (value as Value[])?.includes(elem));
+            const isSemi = (() => {
+              if (!canSelectGroup) return false;
 
-            const isGroupChoosed = isClickableGroup && (suggestion as GroupedSomeObject)?.dataItems?.every((elem) => (value as Value[])?.includes(elem));
-            const isSemi: boolean | undefined = isClickableGroup && (suggestion as GroupedSomeObject)?.dataItems?.some((elem) => (value as Value[])?.includes(elem));
+              // all nested checkboxes are checked
+              return (suggestion as GroupedSomeObject)?.dataItems?.some((elem) => (value as Value[])?.includes(elem));
+            })();
 
             return (
               <GroupWrapper className={theme.group}>
                 <GroupLabel className={theme.groupLabel}>
-                  {isClickableGroup
+                  {canSelectGroup
                     ? (
                       <SuggestionItem
-                        isChoosed={isSemi}
-                        isSemi={!isGroupChoosed && isSemi}
+                        isChosen={isSemi}
+                        isSemi={!isGroupChosen && isSemi}
                         itemRender={itemRender}
                         onClick={onClick}
                         suggestionRef={suggestionRef}
                         textField={textField}
                         theme={theme}
+                        // key={key}
                         {...suggestionGroupLabelComputedProps}
                       />
                     ) : (suggestion as GroupedSomeObject).key}
@@ -197,19 +213,20 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
                     selectedSuggestion,
                     suggestion: dataItem,
                     textField,
-                    hasCheckboxes,
+                    hasCheckBoxes,
                   });
 
-                  const isChoosed: boolean | undefined = isClickableGroup && (value as Value[])?.includes(dataItem);
-
+                  const isChosen: boolean | undefined = canSelectGroup && (value as Value[])?.includes(dataItem);
+                  // const keys = isObject(dataItem) ? JSON.stringify(dataItem) : dataItem as string;
                   return (
                     <SuggestionItem
-                      isChoosed={isChoosed}
+                      isChosen={isChosen}
                       itemRender={itemRender}
                       onClick={onClick}
                       suggestionRef={suggestionRef}
                       textField={textField}
                       theme={theme}
+                      // key={keys}
                       {...suggestionItemComputedProps}
                     />
                   );
@@ -225,19 +242,20 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
             selectedSuggestion,
             suggestion,
             textField,
-            hasCheckboxes,
+            hasCheckBoxes,
           });
 
-          const isItemChoosed: boolean | undefined = isClickableGroup && (value as Value[])?.includes(suggestion);
-
+          const isItemChosen: boolean | undefined = (value as Value[])?.includes(suggestion);
+          // const keyss = isObject(suggestion) ? JSON.stringify(suggestion) : suggestion as string;
           return (
             <SuggestionItem
-              isChoosed={isItemChoosed}
+              isChosen={isItemChosen}
               itemRender={itemRender}
               onClick={onClick}
               suggestionRef={suggestionRef}
               textField={textField}
               theme={theme}
+              // key={keyss}
               {...suggestionItemComputedProps}
             />
           );

@@ -69,7 +69,7 @@ export const getSuggestionItemProps = ({
   highlightedSuggestion,
   selectedSuggestion,
   isGroupLabel,
-  hasCheckboxes,
+  hasCheckBoxes,
 }: GetSuggestionItemProps): SuggestionItemComputedProps => {
   const text = isGroupLabel ? getText((suggestion as GroupedSomeObject)?.key, textField) : getText(suggestion, textField);
 
@@ -100,6 +100,6 @@ export const getSuggestionItemProps = ({
     isScrollTarget,
     key,
     item,
-    hasCheckboxes,
+    hasCheckBoxes,
   };
 };
