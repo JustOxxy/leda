@@ -249,7 +249,6 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
               suggestionRef={suggestionRef}
               textField={textField}
               theme={theme}
-              // key={keyss}
               {...suggestionItemComputedProps}
             />
           );
