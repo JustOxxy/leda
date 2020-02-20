@@ -68,7 +68,6 @@ export interface GroupedSomeObject {
 
 export interface GetSuggestionItemProps {
   compareObjectsBy?: ((suggestionListItem: SomeObject) => any) | string,
-  hasCheckBoxes?: boolean,
   highlightedSuggestion?: Value,
   isGroupLabel?: boolean,
   placeholder?: string,
@@ -83,7 +82,6 @@ export interface SuggestionItemComputedProps {
   isHighlighted?: boolean,
   isSelected?: boolean,
   item: string | number | SomeObject | null,
-  hasCheckBoxes?: boolean,
   key: string,
   text: string | number,
 }
