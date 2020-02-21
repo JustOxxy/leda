@@ -81,7 +81,7 @@ export interface MultiSelectProps<T extends MultiSelectValue | null | undefined 
   /** Кликабельны ли названия групп */
   canSelectGroup?: boolean,
   /** Сравнение объектов по произвольному полю, а не по ссылке */
-  compareObjectsBy?: ((suggestionListItems: SomeObject) => any) | string,
+  compareObjectsBy?: T extends object ? ((suggestionListItems: SomeObject) => any) | string : never,
   /** Данные для отображения в списке.
    * Если передаётся массив обьектов, нужно указать textField - поле обьекта, которое содержит данные для вывода в списке
   */
@@ -127,7 +127,7 @@ export interface MultiSelectProps<T extends MultiSelectValue | null | undefined 
   /** Должен ли открыться выпадающий список, если достигнуто максимальное количество вариантов */
   shouldOpenWhenMaxSelectedReached?: boolean,
   /** Имя поля объекта, данные из которого будут рендериться в качестве элементов списка */
-  textField?: string,
+  textField?: T extends object ? string : never,
   /** Реф */
   ref?: React.Ref<MultiSelectRefCurrent>,
   /** Тема */

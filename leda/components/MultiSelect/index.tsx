@@ -246,6 +246,7 @@ export const MultiSelect = React.forwardRef((props: MultiSelectProps, ref: React
       </Div>
       {(!isMaxItemsSelected || shouldOpenWhenMaxSelectedReached) && (
         <SuggestionList
+          compareObjectsBy={compareObjectsBy}
           data={filteredData}
           groupBy={groupBy}
           hasCheckBoxes={hasCheckBoxes}

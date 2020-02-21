@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { isNil } from 'lodash';
 import { LedaContext } from '../../components/LedaProvider';
 import { Loader } from '../../components/Loader';
 import { Div, DivRefCurrent } from '../../components/Div';
@@ -70,7 +69,6 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
   );
 
   const wrapperRef = React.useRef<DivRefCurrent | null>(null);
-
   const containerRef = React.useRef<HTMLElement | null>(null);
   const suggestionRef = React.useRef<HTMLElement | null>(null);
 
@@ -110,7 +108,7 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!data?.length) {
     return (
       <Div className={theme.container} onMouseDown={(ev) => ev.preventDefault()} ref={wrapperRef}>
         <NoSuggestionsComponent className={theme.noSuggestions} />
@@ -118,7 +116,7 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
     );
   }
 
-  const suggestions: (Value | GroupedSomeObject)[] = !isNil(placeholder) && shouldAllowEmpty
+  const suggestions: (Value | GroupedSomeObject)[] = placeholder !== undefined && shouldAllowEmpty
     ? [placeholder, ...resultedData]
     : resultedData;
 
@@ -164,8 +162,8 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
           );
         })()}
 
-        {suggestions?.map((suggestion: GroupedSomeObject | Value) => {
-          if (!isNil((suggestion as GroupedSomeObject)?.key)) {
+        {suggestions?.map((suggestion, index) => {
+          if ((suggestion as GroupedSomeObject)?.key) {
             const suggestionGroupLabelComputedProps = getSuggestionItemProps({
               compareObjectsBy,
               highlightedSuggestion,
@@ -184,7 +182,7 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
             })();
 
             return (
-              <GroupWrapper className={theme.group}>
+              <GroupWrapper className={theme.group} key={index}>
                 <GroupLabel className={theme.groupLabel}>
                   {canSelectGroup
                     ? (
@@ -200,7 +198,6 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
                         {...suggestionGroupLabelComputedProps}
                       />
                     ) : (
-                      // suggestion as GroupedSomeObject).key}
                       <SuggestionItem
                         itemRender={itemRender}
                         suggestionRef={suggestionRef}
@@ -211,7 +208,6 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
                       />
                     )}
                 </GroupLabel>
-
                 {(suggestion as GroupedSomeObject)?.dataItems?.map((dataItem: Value) => {
                   const suggestionItemComputedProps = getSuggestionItemProps({
                     compareObjectsBy,
