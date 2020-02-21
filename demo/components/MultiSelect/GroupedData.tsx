@@ -53,6 +53,7 @@ export const GroupedData = (args: SomeObject): React.ReactElement => {
         placeholder="Choose cities you would like to visit!"
         isOpen={isOpen}
         canSelectGroup
+        compareObjectsBy="id"
         isLoading={isLoading}
         isRequired
         canSelectAll
