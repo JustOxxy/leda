@@ -4,20 +4,25 @@ import { Loader } from '../../components/Loader';
 import { Div, DivRefCurrent } from '../../components/Div';
 import { Ul } from '../../components/Ul';
 import { COMPONENTS_NAMESPACES } from '../../constants';
-import { useAdaptivePosition, useElement, useTheme } from '../../utils';
-import { scrollToSuggestion, getSuggestionItemProps, groupData } from './helpers';
+import {
+  useAdaptivePosition,
+  useElement,
+  useTheme,
+  checkIsTheSameObject,
+} from '../../utils';
+import { scrollToSuggestion, getSuggestionItemProps } from './helpers';
 import { SuggestionItem } from './SuggestionItem';
 import { SuggestionListProps, GroupedSomeObject, Value } from './types';
 import { NoSuggestions } from './NoSuggestions';
 
 export const SuggestionList = (props: SuggestionListProps): React.ReactElement | null => {
   const {
+    resultedData,
     boundingContainerRef,
     canSelectAll,
     canSelectGroup,
     compareObjectsBy,
     data,
-    groupBy,
     groupLabelRender,
     groupWrapperRender,
     hasCheckBoxes,
@@ -72,8 +77,6 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
   const containerRef = React.useRef<HTMLElement | null>(null);
   const suggestionRef = React.useRef<HTMLElement | null>(null);
 
-  const [resultedData, setResultedData] = React.useState<Value[] | GroupedSomeObject[]>([]);
-
   const classMap = React.useMemo(() => ({
     top: theme.containerTop,
     visible: theme.containerVisible,
@@ -90,13 +93,6 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
     // скроллим эффективно
     scrollToSuggestion(containerRef, suggestionRef);
   }, [isOpen, value, selectedSuggestion, highlightedSuggestion]);
-
-  // group suggestion list items if required
-  React.useEffect((): void => {
-    // grouping data
-
-    setResultedData(groupData(data, groupBy));
-  }, [data, groupBy, value]);
 
   if (!isOpen) return null;
 
@@ -142,14 +138,29 @@ export const SuggestionList = (props: SuggestionListProps): React.ReactElement |
             return (value as Value[]).every((elem) => data?.includes(elem));
           })();
 
+          const isHighlighted = checkIsTheSameObject({
+            compareObjectsBy,
+            obj1: text,
+            obj2: highlightedSuggestion,
+          });
+          const isSelected = checkIsTheSameObject({
+            compareObjectsBy,
+            obj1: text,
+            obj2: selectedSuggestion,
+          });
+
+          // является ли текущий элемент целью scrollToSuggestion
+          const isScrollTarget = highlightedSuggestion ? isHighlighted : isSelected;
+
           const isSelectAllChosen = (value as Value[]).length === suggestionsCount;
           return (
             <SuggestionItem
               hasCheckBoxes={hasCheckBoxes}
               isChosen={isSemi}
               isSemi={!isSelectAllChosen && isSemi}
+              isHighlighted={isHighlighted}
               isPlaceholder={false}
-              isScrollTarget={false}
+              isScrollTarget={isScrollTarget}
               item={text === placeholder ? null : text}
               itemRender={itemRender}
               key={text}
