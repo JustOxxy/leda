@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.0.3] - 2020-02-25
+
+### Fixed
+- MaskedInput: ChangeEvent type
+
+
+## [0.0.2] - 2020-02-23
+
+### Fixed
+- Collapse: auto height
+- MaskedInput: add missing inputValue to event.component
+
+
+## [0.0.1-alpha.16] - 2020-02-20
+
+### Fixed
+- Collapse: better initial rendering for a large number of components
+
+
 ## [0.0.1-alpha.15] - 2020-02-20
 
 ### Added

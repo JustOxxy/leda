@@ -281,7 +281,11 @@ describe('DatePicker', () => {
         .wait(200)
         .type('04052012')
         .blur()
+        .should('have.attr', 'value', '04.05.2012')
+        .focus()
+        .wait(200)
         .clear() // Последняя выбранная дата должна быть 04.05.2012
+        .should('have.attr', 'value', '__.__.____')
         .parents('.datepicker-wrapper')
         .find('div.calendar-date-cell[title="4 мая 2012"]')
         .should('have.class', 'active')

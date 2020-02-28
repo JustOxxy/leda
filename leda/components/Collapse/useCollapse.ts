@@ -9,15 +9,21 @@ const getHeight = (content: React.MutableRefObject<HTMLElement | undefined>) => 
 };
 
 export interface UseCollapseProps {
-  isOpen: boolean,
   content: React.MutableRefObject<HTMLElement | undefined>,
+  isOpen: boolean,
 }
 
-export const useCollapse = ({ isOpen, content }: UseCollapseProps) => {
-  const [height, setHeight] = React.useState('0');
-  const [overflow, setOverflow] = React.useState('hidden');
-  const [visibility, setVisibility] = React.useState('hidden');
+export const useCollapse = ({
+  content, isOpen,
+}: UseCollapseProps) => {
   const [isFirstRender, setIsFirstRender] = React.useState(true);
+  const [height, setHeight] = React.useState(isOpen ? 'auto' : '0');
+  const [overflow, setOverflow] = React.useState(isOpen ? 'visible' : 'hidden');
+  const [visibility, setVisibility] = React.useState(isOpen ? 'visible' : 'hidden');
+
+  const setIsCollapsedStyle = React.useCallback(() => {
+    setVisibility('hidden');
+  }, []);
 
   const setIsExpandedStyle = React.useCallback(() => {
     setHeight('auto');
@@ -25,45 +31,40 @@ export const useCollapse = ({ isOpen, content }: UseCollapseProps) => {
     setVisibility('visible');
   }, []);
 
-  const setIsCollapsedStyle = React.useCallback(() => {
-    setVisibility('hidden');
-  }, []);
-
   React.useEffect(() => {
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      return;
+    }
+
+    setHeight(getHeight(content));
+
     if (isOpen) {
       setVisibility('visible');
-      if (isFirstRender) {
-        setHeight('auto');
-      } else {
-        setHeight(getHeight(content));
-      }
-    } else if (!isFirstRender) {
-      setHeight(getHeight(content));
-      // The magic: Set collapsed style after setting height to enable smooth transition based on height
+    } else {
+      setOverflow('hidden');
+      // set collapsed style after setting height to enable smooth transition based on height
       window.requestAnimationFrame(() => {
-        // Setting these properties will start transition from measured height to 0
+        // setting these properties will start transition from measured height to 0
         setTimeout(() => {
-          // Setting these properties will start transition from measured height to 0
+          // setting these properties will start transition from measured height to 0
           setHeight('0');
-          setOverflow('hidden');
         });
       });
     }
-  }, [content, isFirstRender, isOpen]);
 
-  React.useEffect(() => {
-    setIsFirstRender(false);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content, isOpen]);
 
   const style = React.useMemo(() => ({
+    height,
     overflow,
     visibility,
-    height,
   }), [height, overflow, visibility]);
 
   return {
-    setIsExpandedStyle,
     setIsCollapsedStyle,
+    setIsExpandedStyle,
     style,
   };
 };
